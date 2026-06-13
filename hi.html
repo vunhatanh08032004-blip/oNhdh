@@ -1,0 +1,320 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hệ Điều Hành Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --card2: #111827;
+            --primary: #6366f1;
+            --success: #10b981;
+            --danger: #ef4444;
+            --text: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #020617, #0f172a, #111827);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+
+            .hero h1 {
+                font-weight: 800;
+                font-size: 3rem;
+                background: linear-gradient(to right, #818cf8, #c084fc);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+            .hero p {
+                color: #94a3b8;
+                margin-top: 10px;
+            }
+
+        .glass {
+            background: rgba(30, 41, 59, .65);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 22px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .35);
+        }
+
+        .question-card {
+            transition: all .35s ease;
+            overflow: hidden;
+        }
+
+            .question-card:hover {
+                transform: translateY(-4px) scale(1.01);
+                box-shadow: 0 20px 40px rgba(99, 102, 241, .25);
+                border-color: rgba(99, 102, 241, .4);
+            }
+
+        .question-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            line-height: 1.7;
+        }
+
+        .option {
+            background: rgba(15, 23, 42, .8);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-left: 4px solid #334155;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all .25s ease;
+            color: #e2e8f0;
+        }
+
+            .option:hover {
+                transform: translateX(6px);
+                border-left-color: var(--primary);
+                background: rgba(99, 102, 241, .12);
+                box-shadow: 0 8px 20px rgba(99, 102, 241, .18);
+            }
+
+        .correct {
+            background: rgba(16, 185, 129, .18) !important;
+            border-left-color: var(--success) !important;
+            color: #a7f3d0 !important;
+        }
+
+        .wrong {
+            background: rgba(239, 68, 68, .18) !important;
+            border-left-color: var(--danger) !important;
+            color: #fecaca !important;
+        }
+
+        .explain {
+            margin-top: 18px;
+            background: rgba(30, 41, 59, .7);
+            border-radius: 14px;
+            padding: 14px;
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, .06);
+        }
+
+        .progress {
+            height: 18px;
+            border-radius: 20px;
+            background: #111827;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(to right, #10b981, #059669); /* Đổi sang màu xanh lá cho hợp với "số câu đúng" */
+            font-weight: 700;
+        }
+
+        .counter {
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container py-4">
+
+        <div class="hero">
+            <h1>Hệ Điều Hành Pro</h1>
+            <p>Ôn tập chuyên sâu • Giao diện Dark Mode • Hiệu ứng hiện đại</p>
+        </div>
+
+        <div class="glass p-4 mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="counter">Số câu đúng</span>
+                <span id="scoreText" class="counter">0/0</span>
+            </div>
+
+            <div class="progress">
+                <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
+                     style="width:0%">0%</div>
+            </div>
+        </div>
+
+        <div id="question-container"></div>
+
+        <footer>
+            Hệ Điều Hành Pro • Bootstrap 5 + JavaScript
+        </footer>
+
+    </div>
+
+    <script>
+        // Mảng dữ liệu câu hỏi để rỗng theo yêu cầu
+        const questions = [
+                { "id": 1, "question": "Theo định nghĩa cốt lõi của tài liệu, khái niệm tốt nhất để mô tả về Hệ điều hành là một chương trình chạy mọi lúc trên máy tính, còn được gọi là gì?", "options": ["Chương trình ứng dụng (Application)", "Phần dẻo (Firmware)", "Hạt nhân (Kernel)", "Bộ cấp phát tài nguyên (Resource allocator)"], "answer": "C" },
+                { "id": 2, "question": "Khi người dùng bật nguồn hoặc khởi động lại máy tính, chương trình tự khởi động (bootstrap program) lưu trong ROM hoặc EPROM sẽ chạy đầu tiên để khởi tạo hệ thống. Chương trình này thuộc loại thành phần nào?", "options": ["Phần cứng thuần túy (Hardware)", "Phần dẻo (Firmware)", "Lời gọi hệ thống (System call)", "Tiến trình nền (Background service)"], "answer": "B" },
+                { "id": 3, "question": "Cơ chế ngắt nào được định nghĩa là một ngắt mềm do lỗi phần mềm phát sinh (như chia cho 0) hoặc do một yêu cầu cụ thể từ chương trình người dùng?", "options": ["Ngắt vật lý (Hardware Interrupt)", "Tiếp cận độc quyền (Non-preemptive)", "Bẫy lỗi hoặc ngoại lệ (Trap / Exception)", "Truy cập bộ nhớ trực tiếp (DMA)"], "answer": "C" },
+                { "id": 4, "question": "Trong kiến trúc I/O tốc độ cao, cơ chế nào cho phép bộ điều khiển thiết bị truyền trực tiếp các khối dữ liệu từ bộ đệm vào bộ nhớ chính mà không cần sự can thiệp liên tục của CPU?", "options": ["Đa chương (Multiprogramming)", "Đa nhiệm (Multitasking)", "Khóa loại trừ (Mutex Lock)", "Cấu trúc DMA (Direct Memory Access)"], "answer": "D" },
+                { "id": 5, "question": "Sắp xếp nào sau đây phản ánh đúng trật tự phân cấp hệ thống nhớ theo chiều tốc độ giảm dần, dung lượng tăng dần?", "options": ["Registers -> Cache -> Main Memory -> Solid-state/Hard Disk", "Solid-state/Hard Disk -> Main Memory -> Cache -> Registers", "Cache -> Registers -> Main Memory -> Solid-state/Hard Disk", "Main Memory -> Cache -> Registers -> Solid-state/Hard Disk"], "answer": "A" },
+                { "id": 6, "question": "Khi một tiến trình đang thực thi ở User mode phát ra một Lời gọi hệ thống (System call) để yêu cầu dịch vụ từ hệ điều hành, phần cứng sẽ thực hiện hành động gì?", "options": ["Giữ nguyên trạng thái để đảm bảo tính liên tục của ứng dụng.", "Chuyển đổi bit chế độ của hệ thống từ 0 sang 1.", "Chuyển đổi bit chế độ của hệ thống từ User mode (bit = 1) sang Kernel mode (bit = 0).", "Ép buộc tiến trình chuyển ngay sang trạng thái Terminated."], "answer": "C" },
+                { "id": 7, "question": "Trong thiết kế kiến trúc hệ điều hành, việc tách rời giữa Chính sách (Policy) và Cơ chế (Mechanism) nhằm đạt được mục tiêu quan trọng nào?", "options": ["Tối ưu hóa tuyệt đối dung lượng bộ đệm ẩn Cache.", "Đạt được sự linh hoạt tối đa khi thay đổi cấu hình hệ thống.", "Ngăn chặn triệt để hiện tượng phân mảnh nội vi.", "Giảm thiểu chi phí thời gian của việc chuyển ngữ cảnh (Context Switch)."], "answer": "B" },
+                { "id": 8, "question": "Mô hình cấu trúc hệ điều hành nào thực hiện việc di chuyển các thành phần không thiết yếu từ không gian nhân (Kernel space) ra không gian người dùng (User mode) và giao tiếp qua cơ chế truyền thông điệp (Message passing)?", "options": ["Cấu trúc đơn giản (Monolithic)", "Cấu trúc phân lớp (Layered approach)", "Cấu trúc Module hướng đối tượng", "Cấu trúc Microkernel"], "answer": "D" },
+                { "id": 9, "question": "Cấu trúc vùng nhớ của một tiến trình đang hoạt động trong bộ nhớ RAM bao gồm 4 phần riêng biệt. Vùng nào chịu trách nhiệm lưu trữ các biến toàn cục (global variables) của chương trình?", "options": ["Text section", "Data section", "Stack", "Heap"], "answer": "B" },
+                { "id": 10, "question": "Một tiến trình đang thực thi các mã lệnh (Running) nhưng bất ngờ phải dừng lại để đợi một sự kiện hoặc chờ một tác vụ nhập xuất dữ liệu (I/O) hoàn tất. Tiến trình đó sẽ chuyển sang trạng thái nào?", "options": ["Ready", "New", "Terminated", "Waiting"], "answer": "D" },
+                { "id": 11, "question": "Thành phần thông tin nào KHÔNG được lưu trữ bên trong Khối điều khiển tiến trình (PCB - Process Control Block)?", "options": ["Trạng thái hiện tại của tiến trình", "Bộ đếm chương trình (PC) và các thanh ghi", "Nội dung mã nguồn gốc viết bằng ngôn ngữ C/C++ của lập trình viên", "Danh sách các tập tin (files) đang mở"], "answer": "C" },
+                { "id": 12, "question": "Bộ định thời (Scheduler) nào trong hệ điều hành chịu trách nhiệm chọn tiến trình từ hàng đợi Ready queue trong bộ nhớ chính để cấp phát quyền chiếm dụng CPU?", "options": ["Bộ định thời dài hạn (Long-term / Job Scheduler)", "Bộ định thời ngắn hạn (Short-term / CPU Scheduler)", "Bộ định thời trung hạn (Medium-term Scheduler)", "Bộ điều phối trao đổi (Swapping Scheduler)"], "answer": "B" },
+                { "id": 13, "question": "Hiện tượng hao phí hệ thống (pure overhead) xảy ra khi CPU chuyển từ tiến trình này sang tiến trình khác, buộc hệ thống phải lưu trạng thái của tiến trình cũ vào PCB cũ và tải trạng thái của tiến trình mới từ PCB mới được gọi là gì?", "options": ["Chuyển ngữ cảnh (Context Switch)", "Kết thúc theo tầng (Cascading termination)", "Trao đổi tiến trình (Swapping)", "Lời gọi thủ tục từ xa (RPC)"], "answer": "A" },
+                { "id": 14, "question": "Trong hệ điều hành UNIX, mối quan hệ giữa lệnh fork() và exec() khi tạo lập tiến trình mới là gì?", "options": ["Lệnh fork() kết thúc tiến trình, lệnh exec() giải phóng bộ nhớ.", "Lệnh fork() tạo ra tiến trình con là bản sao của cha, sau đó lệnh exec() được gọi để nạp một chương trình mới vào không gian bộ nhớ của con.", "Lệnh exec() nhân bản tiến trình cha, lệnh fork() thay thế mã nguồn.", "Hai lệnh này thực hiện các tác vụ độc lập và không bao giờ gọi cùng nhau."], "answer": "B" },
+                { "id": 15, "question": "Một tiến trình con đã hoàn thành thực thi và gọi lệnh exit(), tuy nhiên tiến trình cha của nó vẫn chưa gọi lệnh wait() để thu nhận trạng thái trả về. Tiến trình con lúc này nằm ở trạng thái nào?", "options": ["Tiến trình mồ côi (Orphan)", "Tiến trình bị khóa (Blocked)", "Tiến trình Zombie", "Tiến trình Ready"], "answer": "C" },
+                { "id": 16, "question": "Hai mô hình giao tiếp cốt lõi được sử dụng trong Truyền thông liên tiến trình (IPC) là gì?", "options": ["Sockets và Pipes", "Bộ nhớ chia sẻ (Shared Memory) và Trao đổi thông điệp (Message Passing)", "Remote Procedure Calls (RPC) và Stubs", "Hộp thư (Mailbox) và Cổng vật lý (Port)"], "answer": "B" },
+                { "id": 17, "question": "Thành phần tài nguyên nào sau đây thuộc sở hữu riêng biệt (private) của từng Tiểu trình (Thread) bên trong một tiến trình dùng chung?", "options": ["Mã chương trình (Text section)", "Các biến toàn cục (Data section)", "Ngăn xếp (Stack) và Bộ đếm chương trình (PC)", "Vùng nhớ cấp phát động (Heap)"], "answer": "C" },
+                { "id": 18, "question": "Khái niệm \"Xử lý song song\" (Parallelism) khác biệt với \"Xử lý đồng thời\" (Concurrency) ở đặc điểm cốt lõi nào?", "options": ["Xử lý song song chỉ chạy trên hệ thống đơn lõi nhờ cơ chế lập lịch dịch chuyển.", "Xử lý song song thực hiện nhiều tác vụ tại cùng một thời điểm vật lý trên hệ thống đa lõi.", "Xử lý đồng thời đòi hỏi phải phân tách dữ liệu thành các khối bất biến.", "Không có sự khác biệt, hai khái niệm mang bản chất cơ học giống nhau."], "answer": "B" },
+                { "id": 19, "question": "Một ứng dụng có tỷ lệ thành phần công việc bắt buộc phải xử lý tuần tự (nối tiếp) là S = 40%. Nếu triển khai ứng dụng này trên một bộ vi xử lý có số lõi N = 4, tốc độ tăng tốc tối đa (speedup) thu được theo Định luật Amdahl là bao nhiêu?", "options": ["1.54 lần", "1.82 lần", "2.50 lần", "4.00 lần"], "answer": "B" },
+                { "id": 20, "question": "Mô hình ánh xạ đa tiểu trình nào có đặc điểm: \"Nhiều tiểu trình người dùng được ánh xạ vào duy nhất 1 tiểu trình nhân, dẫn đến nhược điểm nếu 1 tiểu trình bị khóa thì toàn bộ hệ thống bị khóa và không khai thác được đa lõi\"?", "options": ["Mô hình One-to-One", "Mô hình Many-to-Many", "Mô hình Many-to-One", "Mô hình cấu trúc hai mức (Two-level model)"], "answer": "C" },
+                { "id": 21, "question": "Phương pháp quản lý tiểu trình ẩn (Implicit Threading) nào cung cấp một tập các chỉ thị biên dịch dành cho ngôn ngữ C/C++ và Fortran, cho phép lập trình viên chỉ cần khai báo vùng song song bằng từ khóa #pragma omp parallel?", "options": ["Grand Central Dispatch (GCD)", "Thread Pools", "Thư viện Pthreads cấp cao", "OpenMP"], "answer": "D" },
+                { "id": 22, "question": "Khi cần kết thúc một tiểu trình trước khi nó hoàn thành nhiệm vụ, phương pháp Hủy có trì hoãn (Deferred cancellation) vận hành dựa trên cơ chế nào?", "options": ["Hệ thống ngắt và tắt tiểu trình ngay lập tức không cần thông báo.", "Tiểu trình định kỳ tự kiểm tra xem có lệnh hủy không tại các điểm an toàn để chủ động tự kết thúc.", "Ép buộc tiến trình mẹ chứa tiểu trình đó phải giải thể theo tầng.", "Đẩy tiểu trình vào hàng đợi Zombie để chờ giải phóng tự động."], "answer": "B" },
+                { "id": 23, "question": "Tình huống xuất hiện khi nhiều tiến trình cùng thao tác trên dữ liệu chung và kết quả cuối cùng của các thao tác đó phụ thuộc hoàn toàn vào thứ tự thực hiện đan xen của các tiến trình được định nghĩa là gì?", "options": ["Tắc nghẽn hệ thống (Deadlock)", "Miền găng (Critical Section)", "Tranh đoạt điều khiển (Race Condition)", "Đảo độ ưu tiên (Priority Inversion)"], "answer": "C" },
+                { "id": 24, "question": "Một giải pháp giải quyết bài toán miền găng (Critical Section) bắt buộc phải thỏa mãn đầy đủ 3 yêu cầu cốt lõi nào?", "options": ["Độc quyền truy xuất (Mutual Exclusion), Tiến độ (Progress), Giới hạn chờ (Bounded waiting).", "Đa chương (Multiprogramming), Đa nhiệm (Multitasking), Chia sẻ thời gian.", "Khóa xoay (Spinlock), Bận thì đợi (Busy wait), Tín hiệu ngắt.", "Đồng bộ hóa, Truyền thông điệp, Bộ nhớ chia sẻ."], "answer": "A" },
+                { "id": 25, "question": "Trong Giải pháp Peterson (giải pháp phần mềm quản lý miền găng cho 2 tiến trình), biến mảng boolean flag[2]; được sử dụng nhằm mục đích gì?", "options": ["Xác định tiến trình nào đang nắm giữ chìa khóa Token của hệ thống.", "Xác định lượt của tiến trình nào được quyền vào miền găng.", "Thay đổi bit chế độ hoạt động từ User sang Kernel mode.", "Xác định trạng thái sẵn sàng muốn vào miền găng của tiến trình tương ứng."], "answer": "D" },
+                { "id": 26, "question": "Nhược điểm lớn nhất của công cụ Khóa loại trừ (Mutex Locks) khi vận hành ở cơ chế mặc định ban đầu là gây ra hiện tượng Bận thì đợi (Busy waiting), khiến khóa này còn có tên gọi khác là gì?", "options": ["Semaphore nhị phân (Binary Semaphore)", "Khóa xoay (Spinlock)", "Biến điều kiện (Condition variable)", "Ống dẫn định danh (Named Pipe)"], "answer": "B" },
+                { "id": 27, "question": "Semaphore nhị phân (Binary semaphore) là loại semaphore có giá trị nguyên chỉ có thể dao động trong khoảng nào và có cơ chế hoạt động tương tự công cụ nào?", "options": ["Giá trị từ 0 đến N; tương tự hàng đợi Message queue.", "Giá trị chỉ có thể là 0 hoặc 1; hoạt động tương tự Mutex lock.", "Giá trị luôn luôn âm; tương tự bẫy lỗi hệ thống.", "Giá trị không bị giới hạn; tương tự biến đếm counter."], "answer": "B" },
+                { "id": 28, "question": "Để giải quyết triệt để vấn đề lãng phí năng lượng CPU do vòng lặp kiểm tra của hiện tượng Bận thì đợi, cấu trúc Semaphore tối ưu áp dụng giải pháp đính kèm hàng đợi và sử dụng hai thao tác hỗ trợ nào từ hệ điều hành?", "options": ["fork() và exec()", "send() và receive()", "block() và wakeup(P)", "acquire() và release()"], "answer": "C" },
+                { "id": 29, "question": "Trong giải pháp sử dụng hệ thống Semaphore để giải quyết Bài toán vùng đệm có giới hạn (Bounded-Buffer Problem), biến semaphore empty được khởi tạo bằng giá trị nào và đóng vai trò gì?", "options": ["Khởi tạo bằng 0; dùng để đếm số ô nhớ đã đầy dữ liệu.", "Khởi tạo bằng 1; dùng để kiểm soát độc quyền truy cập vào vùng đệm.", "Khởi tạo bằng N (kích thước bộ đệm); dùng để đếm số ô nhớ trống còn lại.", "Khởi tạo bằng giá trị âm; dùng để khóa tiến trình tiêu thụ Consumer."], "answer": "C" },
+                { "id": 30, "question": "Khi phân tích Bài toán Bữa ăn tối của các triết gia (Dining-Philosophers Problem), nguy cơ xảy ra lỗi Tắc nghẽn (Deadlock) xuất hiện dưới kịch bản thực tế nào?", "options": ["Chỉ có duy nhất một triết gia ngồi vào bàn ăn và lấy đũa.", "Tất cả 5 triết gia cùng đói một lúc và đồng loạt cầm chiếc đũa bên trái của mình lên, dẫn đến không ai có chiếc đũa thứ hai.", "Một triết gia giữ cả hai chiếc đũa quá lâu làm các triết gia còn lại bị đói CPU.", "Các triết gia liên tục thực hiện hành động suy nghĩ (Think) mà không chịu ăn."], "answer": "B" },
+                { "id": 31, "question": "[Ngữ cảnh: Điều phối tiến trình & Hiệu ứng đoàn tàu] Trong một hệ điều hành máy chủ đơn lõi, có 3 tiến trình P_1, P_2, P_3 cùng gửi yêu cầu xử lý tại thời điểm 0ms. Thời gian chiếm dụng CPU (Burst Time) đo được lần lượt là: t_1 = 24ms, t_2 = 3ms, và t_3 = 3ms. Bộ lập lịch sử dụng thuật toán FCFS (First-Come, First-Served) và xử lý theo đúng thứ tự xếp hàng là P_1 -> P_2 -> P_3. Hãy tính thời gian chờ trung bình của các tiến trình và xác định tên hiện tượng hiệu năng đang xảy ra.", "options": ["Thời gian chờ trung bình là 3.0ms; xảy ra hiện tượng Phân mảnh nội vi.", "Thời gian chờ trung bình là 17.0ms; xảy ra hiện tượng Hiệu ứng đoàn tàu (Convoy Effect).", "Thời gian chờ trung bình là 9.0ms; xảy ra hiện tượng Nghẽn cổ chai vật lý.", "Thời gian chờ trung bình là 24.0ms; xảy ra hiện tượng Độc quyền tiền định."], "answer": "B" },
+                { "id": 32, "question": "[Ngữ cảnh: Tối ưu thời gian chờ & Giải thuật SJF] Vẫn sử dụng các thông số của hệ thống ở câu 31 (P_1 = 24ms, P_2 = 3ms, P_3 = 3ms cùng đến ở thời điểm 0ms). Nếu bộ điều phối chuyển sang áp dụng giải thuật SJF phi tước đoạt (Non-preemptive Shortest-Job-First), thời gian chờ trung bình của cả hệ thống sẽ thay đổi tối ưu thành bao nhiêu?", "options": ["3.0 ms", "5.0 ms", "6.0 ms", "17.0 ms"], "answer": "A" },
+                { "id": 33, "question": "[Ngữ cảnh: Dự đoán chu kỳ CPU tương lai] Hệ điều hành sử dụng thuật toán trung bình tích lũy hàm mũ (Exponential Average) để dự đoán thời gian chạy CPU tiếp theo nhằm tối ưu hóa thuật toán SJF. Giả sử chu kỳ thực tế gần nhất ghi nhận được là t_n = 6ms, giá trị hệ thống đã dự đoán ở chu kỳ trước đó là tau_n = 12ms, và cấu hình trọng số thông tin hiện tại được thiết lập là alpha = 0.25. Hãy tính thời gian dự đoán cho chu kỳ tiếp theo tau_{n+1}.", "options": ["7.5 ms", "9.0 ms", "10.5 ms", "13.5 ms"], "answer": "C" },
+                { "id": 34, "question": "[Ngữ cảnh: Lập lịch tước đoạt quyền CPU SRTF] Trong một hệ thống định thời tước đoạt quyền SRTF (Shortest-Remaining-Time-First), tiến trình P_1 có tổng thời gian Burst Time là 8ms đang độc quyền chạy từ thời điểm 0ms. Tại thời điểm 1ms, một tiến trình mới P_2 xuất hiện trong Ready Queue với thời gian Burst Time yêu cầu là 4ms. Hệ điều hành sẽ xử lý tình huống này như thế nào?", "options": ["Giữ nguyên P_1 chạy tiếp cho đến khi xong vì hệ thống không có quyền cưỡng bức.", "Tước đoạt CPU từ P_1 ngay lập tức, chuyển P_1 về hàng đợi Ready và cấp CPU cho P_2.", "Hủy bỏ hoàn toàn tiến trình P_1 và đẩy dữ liệu của nó vào vùng nhớ đệm Heap.", "Chờ P_1 chạy thêm đúng 3ms nữa rồi mới thực hiện hành vi chuyển ngữ cảnh."], "answer": "B" },
+                { "id": 35, "question": "[Ngữ cảnh: Định thời chia sẻ thời gian Round-Robin] Hệ thống sử dụng thuật toán Round-Robin (RR) với lát cắt thời gian định thời (Time Quantum) được cấu hình là q = 4ms. Một tiến trình duy nhất P_1 đang xếp đầu hàng đợi với thời gian Burst Time yêu cầu là 15ms. Hỏi sau khi được cấp phát CPU và chạy hết một lát cắt thời gian đầu tiên (4ms), trạng thái và thời gian còn lại của P_1 là bao nhiêu?", "options": ["P_1 bị kết thúc (Terminated) và giải phóng toàn bộ vùng nhớ.", "P_1 chuyển sang trạng thái Waiting và thời gian còn lại cần chạy là 11ms.", "P_1 bị tước đoạt CPU, đưa trở lại cuối hàng đợi Ready và thời gian còn lại cần chạy là 11ms.", "P_1 tiếp tục giữ CPU chạy liên tục thêm 11ms nữa mà không bị ngắt ngữ cảnh."], "answer": "C" },
+                { "id": 36, "question": "[Ngữ cảnh: Lựa chọn tham số Time Quantum] Khi thiết kế và tối ưu hóa hệ điều hành đa nhiệm sử dụng thuật toán Round-Robin, nếu người quản trị thiết lập kích thước của lát cắt thời gian (Time Quantum) quá lớn (tiến tới vô hạn), thuật toán này sẽ biến đổi bản chất hoạt động giống hệt thuật toán nào?", "options": ["Định thời theo độ ưu tiên (Priority Scheduling)", "Đến trước phục vụ trước (FCFS)", "Công việc ngắn nhất chạy trước (SJF)", "Định thời đa cấp có phản hồi (Multilevel Feedback Queue)"], "answer": "B" },
+                { "id": 37, "question": "[Ngữ cảnh: Tính toán điều kiện Tránh Deadlock] Hệ thống sử dụng giải thuật Banker để kiểm tra trạng thái an toàn trước khi cấp phát tài nguyên. Hiện tại, một tiến trình P_0 có định mức yêu cầu tối đa là Max = (6, 4, 3). Hệ thống đã phân phối cho tiến trình này lượng tài nguyên thực tế ban đầu là Allocation = (2, 2, 1). Hãy xác định giá trị của vectơ nhu cầu còn lại Need của tiến trình P_0.", "options": ["Need = (8, 6, 4)", "Need = (4, 2, 2)", "Need = (2, 2, 1)", "Need = (4, 2, 1)"], "answer": "B" },
+                { "id": 38, "question": "[Ngữ cảnh: Đánh giá trạng thái an toàn của Hệ thống] Hệ thống có vectơ tài nguyên sẵn có hiện tại là Available = (3, 3, 2). Tiến trình P_1 phát ra một yêu cầu xin cấp thêm tài nguyên với vectơ yêu cầu là Request = (1, 0, 2). Để giải thuật Banker chấp nhận cấp phát tạm thời lượng tài nguyên này nhằm kiểm tra an toàn, điều kiện tiên quyết nào giữa Request, Need và Available bắt buộc phải được thỏa mãn?", "options": ["Request <= Allocation và Request <= Available", "Request <= Need và Request <= Available", "Request >= Available luôn luôn được duyệt cấp phát ngay.", "Request + Available <= Max"], "answer": "B" },
+                { "id": 39, "question": "[Ngữ cảnh: Cập nhật dữ liệu hệ thống trong Banker] Giả sử hệ thống đang có trạng thái an toàn với dữ liệu tài nguyên sẵn có là Available = (3, 3, 2). Tiến trình P_1 có Allocation = (2, 0, 0) và gửi yêu cầu Request = (1, 0, 1) được hệ thống chấp nhận cấp phát. Sau khi thực hiện lệnh cấp phát tài nguyên này, vectơ Available mới của hệ thống sẽ giảm xuống còn bao nhiêu?", "options": ["(4, 3, 3)", "(1, 0, 1)", "(2, 3, 1)", "(2, 3, 2)"], "answer": "C" },
+                { "id": 40, "question": "[Ngữ cảnh: Thu hồi tài nguyên khi Tiến trình Hoàn thành] Sau khi một tiến trình P_i bất kỳ nhận đủ tài nguyên, kết thúc hoàn toàn công việc của mình và giải phóng lại tài nguyên cho hệ thống, công thức tính toán vectơ tài nguyên sẵn có Available mới của hệ thống sẽ được thực hiện theo nguyên lý nào?", "options": ["Available = Available - Allocation", "Available = Max - Need", "Available = Available + Allocation", "Available = Allocation + Need"], "answer": "C" },
+                { "id": 41, "question": "[Ngữ cảnh: Địa chỉ logic và Địa chỉ vật lý] Trong kiến trúc quản lý bộ nhớ của hệ điều hành, cặp thanh ghi Thanh ghi cơ sở (Base register) và Thanh ghi giới hạn (Limit register) được sử dụng nhằm mục đích bảo vệ không gian bộ nhớ. Giả sử thanh ghi cơ sở lưu giá trị 300040 và thanh ghi giới hạn lưu giá trị 120900. Địa chỉ logic nào sau đây được hệ thống đánh giá là hợp lệ (valid)?", "options": ["100000", "120850", "450000", "500000"], "answer": "B" },
+                { "id": 42, "question": "[Ngữ cảnh: Chuyển đổi địa chỉ trong cơ chế Phân trang] CPU của một máy tính tạo ra một địa chỉ logic (địa chỉ ảo) bao gồm hai thành phần: Số trang (Page number - p) và Độ lệch trang (Page offset - d). Khi cần truy xuất dữ liệu trong RAM vật lý, hệ điều hành thực hiện cơ chế dịch địa chỉ như thế nào?", "options": ["Dùng số trang p để tra bảng trang nhằm tìm ra số khung trang vật lý f, sau đó kết hợp với độ lệch d không đổi để định vị ô nhớ.", "Cộng trực tiếp số trang p vào thanh ghi cơ sở để sinh địa chỉ.", "Nhân số trang p với độ lệch d để tìm ra vị trí ô nhớ trong RAM.", "Thay thế hoàn toàn độ lệch d bằng địa chỉ của bảng trang ngoài cùng."], "answer": "A" },
+                { "id": 43, "question": "[Ngữ cảnh: Tính toán Kích thước trang và Số bit địa chỉ] Một kiến trúc máy tính sử dụng không gian địa chỉ ảo 32-bit, kích thước của một trang bộ nhớ (Page size) được cấu hình cố định là 4KB (2^{12} bytes). Hãy xác định số lượng bit cần thiết được dùng để biểu diễn thành phần độ lệch trang (d) và số lượng bit dùng để biểu diễn số trang (p).", "options": ["d cần 10 bits, p cần 22 bits.", "d cần 12 bits, p cần 20 bits.", "d cần 16 bits, p cần 16 bits.", "d cần 20 bits, p cần 12 bits."], "answer": "B" },
+                { "id": 44, "question": "[Ngữ cảnh: Tính toán Thời gian truy cập hiệu quả EAT với TLB] Một hệ điều hành phân trang trang bị bộ đệm phần cứng kết hợp tốc độ cao TLB đóng vai trò làm cache bảng trang để tăng tốc độ hệ thống. Biết thời gian tìm kiếm địa chỉ trong bộ đệm TLB là epsilon = 10ns, thời gian truy cập vào bộ nhớ RAM vật lý mặc định là 100ns. Giả sử tỷ lệ tra trúng trang trong bộ đệm TLB đo được là alpha = 90%. Hãy tính Thời gian truy cập hiệu quả (EAT).", "options": ["110 ns", "120 ns", "130 ns", "210 ns"], "answer": "B" },
+                { "id": 45, "question": "[Ngữ cảnh: Tối ưu hiệu năng EAT khi thay đổi tỷ lệ trúng TLB] Vẫn sử dụng hệ thống máy tính ở câu 44 (thời gian tra TLB là 10ns, đọc RAM là 100ns). Nếu nâng cấp hệ thống giúp tăng tỷ lệ tra trúng TLB từ 90% lên đạt mức tối đa là 100%, thời gian truy cập hiệu quả EAT tối ưu nhất của máy tính này sẽ giảm xuống còn bao nhiêu?", "options": ["90 ns", "100 ns", "110 ns", "210 ns"], "answer": "C" },
+                { "id": 46, "question": "[Ngữ cảnh: Cấu trúc bảng phân trang nâng cao] Khi thiết kế các hệ thống máy tính hiện đại có không gian địa chỉ cực kỳ lớn (64-bit), kích thước của bảng trang phình to ra chiếm dụng quá nhiều dung lượng của bộ nhớ chính RAM. Giải pháp cấu trúc nào thực hiện việc băm số trang ảo thông qua một hàm băm và sử dụng một danh sách liên kết để giải quyết xung đột băm?", "options": ["Phân trang phân cấp (Hierarchical Paging)", "Bảng trang nghịch đảo (Inverted Page Tables)", "Bảng trang băm (Hashed Page Tables)", "Khối nhớ phân đoạn bảo vệ (Segmentation)"], "answer": "C" },
+                { "id": 47, "question": "[Ngữ cảnh: Giải pháp kiến trúc Bảng trang nghịch đảo] Kiến trúc quản lý bảng trang nào được thiết kế bằng cách: “Chỉ duy trì một bảng trang duy nhất cho toàn bộ hệ thống, trong đó mỗi mục (entry) tương ứng với một khung trang vật lý thực tế trong RAM, giúp tiết kiệm bộ nhớ tối đa nhưng tăng thời gian tìm kiếm”?", "options": ["Bảng trang nghịch đảo (Inverted Page Tables)", "Phân trang hai cấp (Two-level paging)", "Phân đoạn thuần túy", "Bộ nhớ ảo hoán đổi (Virtual Memory)"], "answer": "A" },
+                { "id": 48, "question": "[Ngữ cảnh: Cơ chế bảo vệ bộ nhớ vật lý] Trong bảng phân trang, hệ điều hành tích hợp thêm một bit dữ liệu đặc biệt đi kèm với mỗi mục trang gọi là Bit Hợp lệ / Không hợp lệ (Valid / Invalid bit). Nếu bit này của một trang được đặt giá trị là Invalid, điều đó biểu thị trạng thái nào của trang bộ nhớ?", "options": ["Trang đó đang chứa dữ liệu độc quyền của Kernel mode.", "Trang đó không nằm trong không gian địa chỉ logic hợp pháp của tiến trình.", "Trang đó đã được tải thành công và sẵn sàng trên bộ đệm TLB.", "Trang đó đang bị tranh đoạt bởi nhiều tiểu trình chạy song song."], "answer": "B" },
+                { "id": 49, "question": "[Ngữ cảnh: Kiến trúc cấu trúc phân đoạn] Sự khác biệt căn bản về mặt bản chất góc nhìn không gian địa chỉ giữa cơ chế Phân đoạn (Segmentation) và cơ chế Phân trang (Paging) là gì?", "options": ["Phân đoạn chia bộ nhớ thành các khối kích thước cố định, phân trang chia thành các khối kích thước thay đổi.", "Phân trang phản ánh đúng góc nhìn của lập trình viên về chương trình, phân đoạn phản ánh cách nhìn của phần cứng.", "Phân đoạn cho phép không gian địa chỉ logic của tiến trình được chia thành các khối có kích thước thay đổi theo góc nhìn của người lập trình (như hàm main, mảng, stack), trong khi phân trang chia bộ nhớ thành các khối cố định dưới góc nhìn phần cứng.", "Hai cơ chế hoàn toàn trùng khớp nhau về mặt kiến trúc xử lý bit địa chỉ."], "answer": "C" },
+                { "id": 50, "question": "[Ngữ cảnh: Chia sẻ trang bộ nhớ] Để tiết kiệm không gian bộ nhớ RAM khi chạy đồng thời nhiều cửa sổ ứng dụng giống nhau (ví dụ: mở 5 cửa sổ trình soạn thảo văn bản hoặc 5 tiến trình dòng lệnh giống nhau), hệ điều hành áp dụng cơ chế Chia sẻ trang (Shared Pages) dựa trên nguyên lý nào?", "options": ["Nhân bản mã nguồn của ứng dụng thành nhiều bản khác nhau trên RAM.", "Chia sẻ phần mã lệnh không thay đổi trong quá trình thực thi (Mã tái nhập - Reentrant code hoặc Pure code) giữa các tiến trình, trong khi mỗi tiến trình giữ riêng một bản sao dữ liệu của mình.", "Ép buộc tất cả các tiến trình phải xài chung một vùng nhớ Stack và Heap để đồng bộ dữ liệu.", "Chuyển giao toàn bộ quyền kiểm soát bộ nhớ cho kiến trúc Microkernel xử lý từ xa."], "answer": "B" },
+                { "id": 51, "question": "[Ngữ cảnh: Tính Thời gian quay vòng (Turnaround Time) trong SRTF] Một hệ điều hành xử lý ba tiến trình P_1, P_2, P_3 theo giải thuật định thời tước đoạt quyền SRTF (Shortest-Remaining-Time-First) với các thông số: P_1: Thời điểm đến = 0ms, Burst Time = 8ms; P_2: Thời điểm đến = 1ms, Burst Time = 4ms; P_3: Thời điểm đến = 2ms, Burst Time = 9ms. Hãy tính thời gian quay vòng (Turnaround Time - thời gian từ lúc đến hệ thống cho đến khi hoàn thành) của tiến trình P_1.", "options": ["8 ms", "12 ms", "13 ms", "17 ms"], "answer": "B" },
+                { "id": 52, "question": "[Ngữ cảnh: Tính thời gian chờ của Round-Robin đa tiến trình] Hệ thống chạy thuật toán Round-Robin với lát cắt thời gian q = 2ms. Có hai tiến trình P_1 và P_2 cùng nằm trong Ready Queue tại thời điểm 0ms với thời gian yêu cầu CPU lần lượt là t_1 = 5ms và t_2 = 3ms. Hệ thống ưu tiên cho P_1 chạy trước. Hãy tính thời gian chờ trung bình (Average Waiting Time) của hai tiến trình này.", "options": ["2.0 ms", "2.5 ms", "3.0 ms", "3.5 ms"], "answer": "D" },
+                { "id": 53, "question": "[Ngữ cảnh: Thẩm định yêu cầu tài nguyên cấp bách trong Banker] Một hệ thống máy chủ đang vận hành giải thuật Banker bảo vệ tài nguyên tránh Deadlock. Trạng thái hiện tại ghi nhận vectơ tài nguyên chưa phân phối là Available = (2, 2, 1). Tiến trình P_3 có vectơ nhu cầu còn lại được tính toán là Need_3 = (2, 1, 1). Đột nhiên, P_3 gửi một yêu cầu cấp phát khẩn cấp với vectơ dữ liệu Request_3 = (2, 0, 1). Hệ điều hành sẽ xử lý yêu cầu này như thế nào?", "options": ["Bác bỏ hoặc bắt P_3 chờ vì yêu cầu vượt quá khả năng Available hiện tại của hệ thống.", "Bác bỏ vì yêu cầu vượt quá hạn mức tối đa khai báo Need_3 ban đầu của tiến trình.", "Chấp nhận giả định cấp phát ngay vì thỏa mãn cả hai điều kiện kiểm tra dữ liệu sơ bộ: Request_3 <= Need_3 và Request_3 <= Available.", "Thu hồi toàn bộ tài nguyên hiện có của P_3 để phạt lỗi vi phạm đồng bộ."], "answer": "C" },
+                { "id": 54, "question": "[Ngữ cảnh: Tìm Chuỗi an toàn Safe Sequence để tránh Deadlock] Hệ thống có 3 tiến trình P_0, P_1, P_2 với ma trận nhu cầu tài nguyên còn lại là Need và tài nguyên đã cấp phát là Allocation như sau: P_0: Allocation = (1, 0, 0), Need = (2, 2, 1); P_1: Allocation = (2, 1, 1), Need = (1, 0, 1); P_2: Allocation = (0, 1, 1), Need = (3, 3, 2). Vectơ tài nguyên rảnh rỗi ban đầu của hệ thống là Available = (1, 1, 1). Hãy xác định chuỗi an toàn (Safe Sequence) giúp hệ thống không bao giờ bị rơi vào trạng thái Deadlock.", "options": ["Không tồn tại chuỗi an toàn, hệ thống rơi vào trạng thái nguy hiểm (Unsafe state).", "< P_0 -> P_1 -> P_2 >", "< P_1 -> P_0 -> P_2 >", "< P_2 -> P_1 -> P_0 >"], "answer": "C" },
+                { "id": 55, "question": "[Ngữ cảnh: Dịch địa chỉ logic sang địa chỉ vật lý bằng Bảng trang] Một máy tính phân trang có kích thước mỗi trang là 1KB (1024 bytes). Tiến trình đang sử dụng một Bảng trang (Page Table) có cấu trúc lưu trữ chỉ mục như sau: Trang 0 -> Khung 5; Trang 1 -> Khung 9; Trang 2 -> Khung 2. Khi CPU phát ra một địa chỉ logic dạng số thập phân là 1500, hệ điều hành sẽ dịch địa chỉ này thành địa chỉ vật lý tương ứng nào trong RAM?", "options": ["1500", "5596", "9692", "2524"], "answer": "C" },
+                { "id": 56, "question": "[Ngữ cảnh: Tính số bit địa chỉ hệ thống phân trang cực lớn] Thiết kế chip xử lý trung tâm cho một dòng máy tính nhúng thông minh thế hệ mới yêu cầu quản lý không gian địa chỉ vật lý có dung lượng lên tới 64GB (2^{36} bytes). Nếu hệ điều hành phân trang của máy tính này thiết lập kích thước của một khung trang vật lý cố định là 8KB (2^{13} bytes), hỏi Bảng trang vật lý của hệ thống bắt buộc phải thiết kế bao nhiêu bit để quản lý số lượng khung trang (f)?", "options": ["13 bits", "23 bits", "36 bits", "49 bits"], "answer": "B" },
+                { "id": 57, "question": "[Ngữ cảnh: Tính toán kích thước Bảng trang trong RAM] Một kiến trúc máy tính 32-bit sử dụng cơ chế phân trang một cấp thông thường, kích thước trang mặc định là 4KB (2^{12} bytes). Biết rằng mỗi dòng ghi nhận dữ liệu (entry) trong bảng trang chiếm dung lượng 4 bytes bộ nhớ. Hãy tính toán tổng dung lượng bộ nhớ RAM bị tiêu tốn chỉ để lưu trữ toàn bộ bảng trang này của một tiến trình.", "options": ["1 MB", "4 MB", "8 MB", "16 MB"], "answer": "B" },
+                { "id": 58, "question": "[Ngữ cảnh: Tính EAT khi trượt TLB (TLB Miss) liên tiếp] Hệ thống máy tính đa lõi chạy tác vụ phân tích dữ liệu lớn. Thời gian đọc dữ liệu RAM vật lý là 120ns, thời gian tra cứu bộ đệm ẩn TLB phần cứng là 15ns. Do tiến trình liên tục nhảy vùng nhớ, tỷ lệ tìm thấy trang trong TLB sụt giảm nghiêm trọng xuống chỉ còn alpha = 40%. Hãy tính thời gian truy cập bộ nhớ hiệu quả (EAT) của hệ thống đa lõi này dưới tác động của hiện tượng trượt cache bảng trang.", "options": ["135 ns", "154 ns", "195 ns", "219 ns"], "answer": "C" },
+                { "id": 59, "question": "[Ngữ cảnh: Tính toán thanh ghi giới hạn bảo vệ phân đoạn bộ nhớ] Trong một hệ thống quản lý bộ nhớ theo cơ chế Phân đoạn (Segmentation), một phân đoạn dữ liệu của chương trình (ví dụ: Phân đoạn mảng đồ họa) được cấp phát định vị thông qua một bảng phân đoạn. Bản ghi quản lý phân đoạn này có thông số: Cơ sở (Base) = 2192, Giới hạn (Limit) = 430. CPU phát ra một yêu cầu truy cập địa chỉ logic nằm trong phân đoạn này với độ lệch đoạn là d = 412. Địa chỉ vật lý thực tế được ánh xạ vào RAM là bao nhiêu?", "options": ["Địa chỉ bất hợp pháp, sinh lỗi Bẫy ngoại lệ (Addressing Trap Error).", "2192", "2604", "2622"], "answer": "C" },
+                { "id": 60, "question": "[Ngữ cảnh: Lỗi vi phạm phân đoạn bộ nhớ vật lý] Vẫn sử dụng cấu hình hệ thống phân đoạn ở câu 59 (Base = 2192, Limit = 430). Nếu lập trình viên cố tình viết mã lệnh can thiệp sâu, khiến CPU phát ra yêu cầu truy cập dữ liệu với độ lệch đoạn lên tới d = 500, phản ứng lập tức của kiến trúc phần cứng máy tính và hệ điều hành là gì?", "options": ["Tự động nới rộng giá trị thanh ghi Limit lên thành 500 để đáp ứng tiến trình.", "Phần cứng phát hiện lỗi dịch địa chỉ do vượt quá giới hạn (500 > 430), tạo ra một ngắt mềm (bẫy lỗi/ngoại lệ) báo về cho nhân HĐH để cưỡng bức dừng tiến trình.", "Chuyển toàn bộ dữ liệu của phân đoạn này ghi đè lên phân đoạn chứa mã nguồn Kernel.", "Bỏ qua lỗi và trả về một giá trị ngẫu nhiên bằng 0 cho CPU thực thi tiếp."], "answer": "B" },
+                { "id": 61, "question": "[Ngữ cảnh: Định thời Độc quyền - SJF (Shortest Job First)] Một hệ thống máy chủ đơn nhân áp dụng thuật toán định thời độc quyền Shortest Job First (SJF). Hệ thống tiếp nhận 4 tiến trình với các thông số sau: P_1: Thời điểm đến = 0ms, Burst Time = 7ms; P_2: Thời điểm đến = 2ms, Burst Time = 4ms; P_3: Thời điểm đến = 4ms, Burst Time = 1ms; P_4: Thời điểm đến = 5ms, Burst Time = 4ms. Hãy tính thời gian quay vòng (Turnaround Time) của tiến trình P_2.", "options": ["4 ms", "8 ms", "10 ms", "14 ms"], "answer": "C" },
+                { "id": 62, "question": "[Ngữ cảnh: Định thời Không độc quyền - SRTF (Shortest Remaining Time First)] Vẫn sử dụng tập dữ liệu của Câu 61 (P_1: 0ms/7ms; P_2: 2ms/4ms; P_3: 4ms/1ms; P_4: 5ms/4ms) nhưng hệ điều hành chuyển sang cấu hình giải thuật không độc quyền SRTF. Hãy xác định thời gian chờ (Waiting Time) của tiến trình P_1.", "options": ["0 ms", "3 ms", "7 ms", "9 ms"], "answer": "D" },
+                { "id": 63, "question": "[Ngữ cảnh: Round-Robin với Lát cắt thời gian lớn (q = 4ms)] Hệ thống xử lý đa nhiệm chia sẻ thời gian chạy thuật toán Round-Robin với định mức thời gian quantum q = 4ms. Có 3 tiến trình nằm sẵn trong Ready queue tại thời điểm 0ms theo thứ tự xếp hàng là P_1, P_2, P_3. Thời gian xử lý Burst Time tương ứng là t_1 = 9ms, t_2 = 3ms, t_3 = 5ms. Hãy tính thời gian quay vòng trung bình (Average Turnaround Time) của hệ thống.", "options": ["11.0 ms", "12.33 ms", "13.67 ms", "15.0 ms"], "answer": "B" },
+                { "id": 64, "question": "[Ngữ cảnh: Round-Robin đan xen thời điểm đến vật lý] Một bài toán kiểm tra thuật toán Round-Robin (q = 3ms) khi các tiến trình không đến cùng một lúc: P_1: Đến lúc 0ms, Burst Time = 5ms; P_2: Đến lúc 2ms, Burst Time = 4ms. Hỏi tại thời điểm t=3ms, cấu trúc thứ tự xếp hàng của Ready queue sẽ trông như thế nào? (Hệ thống ưu tiên nạp tiến trình mới đến trước khi đẩy tiến trình cũ vừa hết lượt xuống cuối hàng).", "options": ["< P_1 >", "< P_2, P_1 >", "< P_1, P_2 >", "Queue trống rỗng vì cả hai cùng chạy song song."], "answer": "B" },
+                { "id": 65, "question": "[Ngữ cảnh: Giới hạn của Định luật Amdahl trên kiến trúc chip đa lõi] Một ứng dụng đồ họa nặng được lập trình viên tối ưu hóa, trong đó có 75% khối lượng mã nguồn có khả năng chia nhỏ để xử lý song song, còn 25% mã nguồn bắt buộc phải xử lý tuần tự nối tiếp. Theo định luật Amdahl, nếu hệ thống nâng cấp phần cứng từ một lõi đơn lên thành hệ thống chứa 4 lõi xử lý, hiệu suất thực thi tổng thể của ứng dụng sẽ tăng lên tối đa bao nhiêu lần?", "options": ["1.6 lần", "2.28 lần", "3.42 lần", "4.0 lần"], "answer": "B" },
+                { "id": 66, "question": "Trong kiến trúc điều phối của hệ điều hành, cơ chế định thời Độc quyền (Non-preemptive scheduling) được định nghĩa dựa trên nguyên lý cốt lõi nào?", "options": ["Hệ điều hành có quyền ngắt tiến trình bất cứ lúc nào khi có một xung nhịp thời gian (timer interrupt) phát ra.", "Khi một tiến trình được cấp phát CPU, nó sẽ giữ chặt CPU và thực thi liên tục cho đến khi tự nguyện giải phóng CPU (kết thúc) hoặc chuyển sang trạng thái chờ (Waiting) do yêu cầu I/O.", "CPU liên tục luân chuyển quyền xử lý giữa các tiến trình sau mỗi lát cắt thời gian cực nhỏ.", "Tiến trình có dung lượng bộ nhớ lớn hơn sẽ tước đoạt quyền thực thi của tiến trình nhỏ hơn."], "answer": "B" },
+                { "id": 67, "question": "Cơ chế định thời Không độc quyền (Preemptive scheduling) mang lại ưu điểm vượt trội nào và phù hợp nhất với loại hệ điều hành nào hiện nay?", "options": ["Tiết kiệm tài nguyên chuyển đổi ngữ cảnh; phù hợp với hệ thống xử lý theo lô (Batch system).", "Giúp nhân hệ điều hành có cấu trúc đơn giản nhất; phù hợp với các thiết bị nhúng dung lượng thấp.", "Tăng khả năng đáp ứng nhanh chóng và tính tương tác linh hoạt; phù hợp tuyệt đối cho hệ điều hành đa nhiệm (Multitasking) và chia sẻ thời gian (Timesharing).", "Ngăn chặn hoàn toàn hiện tượng tranh đoạt điều khiển (Race Condition) trong không gian nhân."], "answer": "C" },
+                { "id": 68, "question": "Khi một tiến trình đang thực thi bình thường (Running) thì bị bộ đếm thời gian (Timer) của hệ thống thông báo hết định mức thời gian (Time quantum). Tiến trình này sẽ bị tước đoạt CPU và chuyển dịch sang trạng thái nào tiếp theo?", "options": ["Waiting state", "Ready state", "Terminated state", "New state"], "answer": "B" },
+                { "id": 69, "question": "Trong các thuật toán lập lịch CPU dưới đây, thuật toán nào mang bản chất vận hành là Độc quyền (Non-preemptive) và thuật toán nào là Không độc quyền (Preemptive)?", "options": ["FCFS là không độc quyền; Round-Robin là độc quyền.", "Round-Robin là độc quyền; SRTF là không độc quyền.", "FCFS là độc quyền; SRTF và Round-Robin là không độc quyền.", "Tất cả các thuật toán lập lịch CPU đều bắt buộc phải là không độc quyền."], "answer": "C" },
+                { "id": 70, "question": "Khái niệm Thời gian quay vòng (Turnaround Time / Round Time) của một tiến trình trong hệ thống được định nghĩa chính xác là gì?", "options": ["Khoảng thời gian từ lúc tiến trình bắt đầu được cấp CPU lần đầu tiên cho đến khi kết thúc.", "Tổng khoảng thời gian tiến trình phải nằm chờ đợi trong hàng đợi Ready queue.", "Khoảng thời gian từ lúc tiến trình được nạp vào hệ thống (Arrival Time) cho đến khi nó hoàn thành xong hoàn toàn công việc (Completion Time).", "Thời gian cần thiết để hệ thống thực hiện một hành vi chuyển ngữ cảnh (Context Switch)."], "answer": "C" },
+                { "id": 71, "question": "Mối quan hệ toán học giữa ba đại lượng: Thời gian quay vòng (Turnaround Time - T_t), Thời gian chờ (Waiting Time - W_t) và Thời gian xử lý thực tế (Burst Time - B_t) của một tiến trình được thể hiện qua công thức nào?", "options": ["T_t = W_t - B_t", "T_t = W_t + B_t", "W_t = T_t + B_t", "B_t = T_t + W_t"], "answer": "B" },
+                { "id": 72, "question": "Khái niệm Thời gian đáp ứng (Response Time) trong lý thuyết điều phối tiến trình có ý nghĩa gì, đặc biệt là đối với các môi trường tính toán tương tác trực tiếp với người dùng?", "options": ["Khoảng thời gian từ lúc tiến trình gửi yêu cầu cho đến khi hệ thống đưa ra phản hồi/đáp ứng đầu tiên.", "Tổng thời gian cần thiết để tiến trình xuất ra toàn bộ kết quả dữ liệu hoàn chỉnh.", "Thời gian tiến trình thực hiện lệnh giải phóng bộ nhớ RAM.", "Khoảng thời gian tiến trình chạy ở Kernel mode."], "answer": "A" },
+                { "id": 73, "question": "Khi đánh giá hiệu năng của bộ lập lịch CPU, một hệ điều hành được coi là tối ưu hóa tốt khi các chỉ số thời gian được thiết kế theo hướng nào?", "options": ["Tối đa hóa Thời gian quay vòng (Turnaround Time) và Thời gian chờ (Waiting Time).", "Tối thiểu hóa Tốc độ xử lý (Throughput) của CPU.", "Tối đa hóa Hiệu suất sử dụng CPU (CPU utilization) và Tối thiểu hóa các loại thời gian: Quay vòng, Chờ, Đáp ứng.", "Giữ cho Thời gian đáp ứng (Response Time) ở mức cao nhất có thể."], "answer": "C" },
+                { "id": 74, "question": "Hạn chế lớn nhất của việc thiết lập một lát cắt thời gian Time Quantum quá nhỏ trong giải thuật không độc quyền Round-Robin là gì?", "options": ["Biến thuật toán Round-Robin trở thành thuật toán FCFS độc quyền.", "Gây ra hiện tượng đói tài nguyên (Starvation) vô hạn cho các tiến trình ngắn.", "Làm phình to dung lượng của Khối điều khiển tiến trình (PCB) trong RAM.", "Phát sinh chi phí hao phí hệ thống (pure overhead) cực lớn do tần suất thực hiện hành vi Chuyển ngữ cảnh (Context Switch) diễn ra quá dày đặc."], "answer": "D" },
+                { "id": 75, "question": "Hiện tượng Đói dòng / Đói tài nguyên (Starvation hoặc Indefinite Blocking) là nhược điểm thường gặp của giải thuật định thời nào, và hệ điều hành giải quyết hiện tượng này bằng giải pháp nào?", "options": ["Xuất hiện ở thuật toán FCFS; giải quyết bằng cách tăng dung lượng bộ nhớ Cache.", "Xuất hiện ở thuật toán Định thời theo độ ưu tiên (Priority) hoặc SJF; giải quyết bằng kỹ thuật Lão hóa (Aging - tăng dần độ ưu tiên theo thời gian chờ).", "Xuất hiện ở thuật toán Round-Robin; giải quyết bằng cách giảm kích thước Time Quantum.", "Xuất hiện ở cấu trúc Microkernel; giải quyết bằng cách truyền thông điệp liên tục."], "answer": "B" }
+            ];
+
+
+        let correctCount = 0; // Biến đếm số câu trả lời ĐÚNG
+        let total = questions.length;
+
+        function renderQuestions() {
+            const container = document.getElementById('question-container');
+
+            // Khởi tạo hiển thị ban đầu (0/Tổng số câu)
+            document.getElementById('scoreText').innerText = `0/${total}`;
+
+            questions.forEach(q => {
+                const div = document.createElement('div');
+                div.className = 'glass question-card p-4 mb-4';
+
+                let opts = '';
+                const labels = ['A', 'B', 'C', 'D'];
+
+                labels.forEach((l, i) => {
+                    opts += `
+                        <div class="option" onclick="checkAnswer(this, '${l}', '${q.answer}')">
+                            <b class="me-2 text-info">${l}.</b> ${q.options[i]}
+                        </div>`;
+                });
+
+                div.innerHTML = `
+                        <div class="question-title mb-4">Câu ${q.id}: ${q.question}</div>
+                        ${opts}
+                        <div class="explain d-none">
+                            <b>Giải thích:</b><br>
+                            ${q.explain ? q.explain : `Đáp án đúng là: ${q.answer}`}
+                        </div>
+                    `;
+                container.appendChild(div);
+            });
+        }
+
+        function checkAnswer(el, selected, correct) {
+            const parent = el.parentElement;
+
+            // Nếu câu này đã làm rồi thì không tính lại nữa
+            if (parent.dataset.done) return;
+            parent.dataset.done = "true";
+
+            const options = parent.querySelectorAll('.option');
+
+            // Tìm và tô xanh đáp án đúng
+            options.forEach(op => {
+                if (op.innerText.trim().startsWith(correct)) {
+                    op.classList.add('correct');
+                }
+            });
+
+            // Nếu người dùng chọn ĐÚNG đáp án
+            if (selected === correct) {
+                correctCount++; // Tăng số câu đúng lên 1
+            } else {
+                el.classList.add('wrong'); // Nếu sai thì tô đỏ câu vừa chọn
+            }
+
+            // Hiển thị phần giải thích
+            const explain = parent.querySelector('.explain');
+            if (explain) {
+                explain.classList.remove('d-none');
+            }
+
+            // Tính toán % tiến độ dựa trên số câu ĐÚNG
+            const percent = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('progressBar').innerText = percent + '%';
+            document.getElementById('scoreText').innerText = correctCount + '/' + total;
+        }
+
+        // Gọi hàm render khi tải trang
+        renderQuestions();
+    </script>
+</body>
+</html>
